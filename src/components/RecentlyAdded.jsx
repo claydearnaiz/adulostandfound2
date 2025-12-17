@@ -60,7 +60,8 @@ const RecentItemCard = ({ item, onClick }) => {
                 <LazyImage
                     src={item.image}
                     alt={item.name}
-                    className="absolute inset-0 group-hover:scale-105 transition-transform duration-300"
+                    className="absolute inset-0 bg-slate-50 group-hover:scale-105 transition-transform duration-300"
+                    imgStyle={{ objectFit: 'contain', padding: '8px' }}
                 />
                 {/* NEW badge */}
                 <div className="absolute top-2 left-2 z-10">

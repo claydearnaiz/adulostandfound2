@@ -23,7 +23,8 @@ export const ItemDetailsModal = React.memo(({
           <LazyImage
             src={item.image}
             alt={item.name}
-            className="absolute inset-0"
+            className="absolute inset-0 bg-slate-50"
+            imgStyle={{ objectFit: 'contain', padding: '12px' }}
           />
           <div className="absolute top-3 left-3 z-10">
             <span className={`badge text-sm ${item.status === 'Claimed' ? 'badge-success' : 'badge-warning'

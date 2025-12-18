@@ -1,0 +1,19 @@
+{
+    "indexes": [
+        {
+            "collectionGroup": "loginAttempts",
+            "queryScope": "COLLECTION",
+            "fields": [
+                {
+                    "fieldPath": "isDeactivated",
+                    "order": "ASCENDING"
+                },
+                {
+                    "fieldPath": "deactivatedAt",
+                    "order": "DESCENDING"
+                }
+            ]
+        }
+    ],
+    "fieldOverrides": []
+}

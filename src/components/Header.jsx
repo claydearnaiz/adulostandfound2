@@ -34,19 +34,19 @@ export const Header = ({ isAdminView, setIsAdminView, onLoginClick, onOpenDashbo
 
           {/* Right Section */}
           <div className="flex items-center gap-2 sm:gap-3">
-            {/* View Toggle */}
-            <div className="hidden sm:flex items-center bg-slate-100 p-1 rounded-xl">
-              <button
-                onClick={() => setIsAdminView(false)}
-                className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${!isAdminView
-                  ? 'bg-white text-blue-600 shadow-sm'
-                  : 'text-slate-500 hover:text-slate-700'
-                  }`}
-              >
-                <User size={14} />
-                <span>Browse</span>
-              </button>
-              {isAdmin && (
+            {/* View Toggle - Only visible for admins */}
+            {isAdmin && (
+              <div className="hidden sm:flex items-center bg-slate-100 p-1 rounded-xl">
+                <button
+                  onClick={() => setIsAdminView(false)}
+                  className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${!isAdminView
+                    ? 'bg-white text-blue-600 shadow-sm'
+                    : 'text-slate-500 hover:text-slate-700'
+                    }`}
+                >
+                  <User size={14} />
+                  <span>Browse</span>
+                </button>
                 <button
                   onClick={() => setIsAdminView(true)}
                   className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm font-medium transition-all ${isAdminView
@@ -57,8 +57,8 @@ export const Header = ({ isAdminView, setIsAdminView, onLoginClick, onOpenDashbo
                   <Shield size={14} />
                   <span>Manage</span>
                 </button>
-              )}
-            </div>
+              </div>
+            )}
 
             {/* Auth */}
             {user ? (

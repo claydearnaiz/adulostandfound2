@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import {
   Search, Plus, LayoutGrid, List, Package, Smartphone, Briefcase, BookOpen, Shirt,
   Download, FileText, FileSpreadsheet, ChevronDown, Calendar, ArrowUpDown,
-  History, ClipboardList
+  History, ClipboardList, UserX, Users
 } from 'lucide-react';
 import { exportService } from '../services/exportService';
 
@@ -47,8 +47,11 @@ export const FilterBar = ({
   // Admin actions
   onOpenActivityLog,
   onOpenClaimRequests,
+  onOpenDeactivatedUsers,
+  onOpenUsersPanel,
   onSeedData,
-  pendingClaimsCount = 0
+  pendingClaimsCount = 0,
+  deactivatedUsersCount = 0
 }) => {
   const [showExportMenu, setShowExportMenu] = useState(false);
   const [showDateFilter, setShowDateFilter] = useState(false);
@@ -101,15 +104,18 @@ export const FilterBar = ({
 
           {/* Filters */}
           <div className="flex flex-wrap gap-2 items-center">
-            <select
-              className="input h-12 w-full sm:w-auto min-w-[130px]"
-              value={statusFilter}
-              onChange={(e) => setStatusFilter(e.target.value)}
-            >
-              <option value="All">All Status</option>
-              <option value="Unclaimed">Unclaimed</option>
-              <option value="Claimed">Claimed</option>
-            </select>
+            {/* Status Filter - Admin only */}
+            {isAdmin && (
+              <select
+                className="input h-12 w-full sm:w-auto min-w-[130px]"
+                value={statusFilter}
+                onChange={(e) => setStatusFilter(e.target.value)}
+              >
+                <option value="All">All Status</option>
+                <option value="Unclaimed">Unclaimed</option>
+                <option value="Claimed">Claimed</option>
+              </select>
+            )}
 
             <select
               className="input h-12 w-full sm:w-auto min-w-[150px]"
@@ -201,6 +207,33 @@ export const FilterBar = ({
                         {pendingClaimsCount > 9 ? '9+' : pendingClaimsCount}
                       </span>
                     )}
+                  </button>
+                )}
+
+                {/* Deactivated Users Button */}
+                {onOpenDeactivatedUsers && (
+                  <button
+                    onClick={onOpenDeactivatedUsers}
+                    className="relative p-3 text-slate-500 hover:text-red-600 hover:bg-red-50 rounded-xl transition-all"
+                    title="Deactivated Users"
+                  >
+                    <UserX size={18} />
+                    {deactivatedUsersCount > 0 && (
+                      <span className="absolute -top-1 -right-1 h-5 w-5 bg-red-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center">
+                        {deactivatedUsersCount > 9 ? '9+' : deactivatedUsersCount}
+                      </span>
+                    )}
+                  </button>
+                )}
+
+                {/* Users Panel Button */}
+                {onOpenUsersPanel && (
+                  <button
+                    onClick={onOpenUsersPanel}
+                    className="p-3 text-slate-500 hover:text-indigo-600 hover:bg-indigo-50 rounded-xl transition-all"
+                    title="View Users & Claims History"
+                  >
+                    <Users size={18} />
                   </button>
                 )}
 

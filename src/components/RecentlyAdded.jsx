@@ -4,10 +4,12 @@ import { format, isAfter, subDays } from 'date-fns';
 import { LazyImage } from './LazyImage';
 
 export const RecentlyAdded = ({ items, onItemClick }) => {
-    // Filter items added in the last 7 days
+    // Filter items added in the last 7 days and exclude claimed items
     const sevenDaysAgo = subDays(new Date(), 7);
     const recentItems = items.filter(item => {
         if (!item.createdAt) return false;
+        // Hide claimed items from recently added (this component is only shown to regular users)
+        if (item.status === 'Claimed') return false;
         const createdDate = item.createdAt.toDate ? item.createdAt.toDate() : new Date(item.createdAt);
         return isAfter(createdDate, sevenDaysAgo);
     }).slice(0, 10); // Max 10 items

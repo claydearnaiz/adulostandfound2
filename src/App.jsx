@@ -16,9 +16,12 @@ import { BulkActionBar } from './components/BulkActionBar';
 import { UserDashboard } from './components/UserDashboard';
 import { ClaimRequestModal } from './components/ClaimRequestModal';
 import { ClaimRequestsPanel } from './components/ClaimRequestsPanel';
+import { DeactivatedUsersPanel } from './components/DeactivatedUsersPanel';
+import { UsersPanel } from './components/UsersPanel';
 import { itemService } from './services/itemService';
 import { activityLogService } from './services/activityLogService';
 import { claimRequestService } from './services/claimRequestService';
+import { userService } from './services/userService';
 import { Package, Search } from 'lucide-react';
 import { MOCK_ITEMS } from './services/mockData';
 import { isAfter, isBefore, parseISO, startOfDay, endOfDay } from 'date-fns';
@@ -73,6 +76,8 @@ function AppContent() {
   // NEW: Admin modals
   const [isActivityLogOpen, setIsActivityLogOpen] = useState(false);
   const [isClaimRequestsOpen, setIsClaimRequestsOpen] = useState(false);
+  const [isDeactivatedUsersOpen, setIsDeactivatedUsersOpen] = useState(false);
+  const [isUsersPanelOpen, setIsUsersPanelOpen] = useState(false);
 
   // NEW: User modals
   const [isUserDashboardOpen, setIsUserDashboardOpen] = useState(false);
@@ -86,6 +91,9 @@ function AppContent() {
 
   // NEW: Pending claims count
   const [pendingClaimsCount, setPendingClaimsCount] = useState(0);
+
+  // NEW: Deactivated users count
+  const [deactivatedUsersCount, setDeactivatedUsersCount] = useState(0);
 
   // Reset admin view if user loses admin status
   useEffect(() => {
@@ -103,6 +111,7 @@ function AppContent() {
   useEffect(() => {
     if (isAdmin) {
       loadPendingClaimsCount();
+      loadDeactivatedUsersCount();
     }
   }, [isAdmin]);
 
@@ -137,6 +146,11 @@ function AppContent() {
     setPendingClaimsCount(count);
   };
 
+  const loadDeactivatedUsersCount = async () => {
+    const count = await userService.getDeactivatedCount();
+    setDeactivatedUsersCount(count);
+  };
+
   // Filter and sort logic
   const filteredItems = useMemo(() => {
     let result = items.filter(item => {
@@ -168,6 +182,11 @@ function AppContent() {
       return matchesSearch && matchesStatus && matchesLocation && matchesCategory && matchesDateRange;
     });
 
+    // Hide claimed items from regular users (non-admin view)
+    if (!isAdminView) {
+      result = result.filter(item => item.status !== 'Claimed');
+    }
+
     // Apply sorting
     result.sort((a, b) => {
       switch (sortOption) {
@@ -184,7 +203,7 @@ function AppContent() {
     });
 
     return result;
-  }, [items, debouncedSearch, statusFilter, locationFilter, categoryFilter, dateFrom, dateTo, sortOption]);
+  }, [items, debouncedSearch, statusFilter, locationFilter, categoryFilter, dateFrom, dateTo, sortOption, isAdminView]);
 
   const handleCardClick = (item) => {
     setSelectedItem(item);
@@ -398,8 +417,11 @@ function AppContent() {
             setSortOption={setSortOption}
             onOpenActivityLog={() => setIsActivityLogOpen(true)}
             onOpenClaimRequests={() => setIsClaimRequestsOpen(true)}
+            onOpenDeactivatedUsers={() => setIsDeactivatedUsersOpen(true)}
+            onOpenUsersPanel={() => setIsUsersPanelOpen(true)}
             onSeedData={handleSeedData}
             pendingClaimsCount={pendingClaimsCount}
+            deactivatedUsersCount={deactivatedUsersCount}
           />
         </div>
       </div>
@@ -489,6 +511,19 @@ function AppContent() {
         isOpen={isClaimRequestsOpen}
         onClose={() => setIsClaimRequestsOpen(false)}
         onClaimAction={handleClaimAction}
+      />
+
+      <DeactivatedUsersPanel
+        isOpen={isDeactivatedUsersOpen}
+        onClose={() => {
+          setIsDeactivatedUsersOpen(false);
+          loadDeactivatedUsersCount(); // Refresh count when panel closes
+        }}
+      />
+
+      <UsersPanel
+        isOpen={isUsersPanelOpen}
+        onClose={() => setIsUsersPanelOpen(false)}
       />
 
       {/* User Modals */}
